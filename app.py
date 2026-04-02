@@ -33,7 +33,7 @@ STRIPE_PRO_PRICE_ID     = os.getenv('STRIPE_PRO_PRICE_ID', '')
 # ── OpenRouter ──────────────────────────────────────────────────────────────
 openai_client = OpenAI(
     api_key=os.getenv('OPENROUTER_API_KEY',
-                      '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'),
+                      ''),
     base_url="https://openrouter.ai/api/v1"
 )
 
