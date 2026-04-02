@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account – FollowUpAI</title>
+  <meta name="description" content="Create a free FollowUpAI account and start generating professional emails instantly." />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+    .auth-wrap {
+      position:relative; z-index:1;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      min-height:100vh; padding:40px 20px;
+    }
+    .auth-card {
+      width:100%; max-width:420px;
+      background:var(--bg-card);
+      backdrop-filter:blur(24px) saturate(180%);
+      -webkit-backdrop-filter:blur(24px) saturate(180%);
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      padding:44px 40px;
+      box-shadow:0 0 0 1px rgba(255,255,255,0.03),
+                 0 32px 80px -20px rgba(0,0,0,0.7),
+                 0 0 60px -20px var(--accent-glow);
+      animation:slideUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .auth-logo { display:flex; align-items:center; gap:10px; margin-bottom:28px; text-decoration:none; }
+    .auth-logo-icon {
+      width:36px; height:36px;
+      background:linear-gradient(135deg, var(--accent), #0891b2);
+      border-radius:8px; display:flex; align-items:center;
+      justify-content:center; font-size:16px;
+      box-shadow:0 2px 12px var(--accent-glow);
+    }
+    .auth-logo-name {
+      font-size:1.1rem; font-weight:700;
+      background:linear-gradient(135deg, #f1f5f9 30%, var(--accent-light));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .auth-title { font-size:1.5rem; font-weight:800; letter-spacing:-0.03em; color:var(--text-primary); margin-bottom:6px; }
+    .auth-sub   { font-size:0.88rem; color:var(--text-muted); margin-bottom:16px; }
+
+    /* Free plan badge */
+    .free-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 12px; border-radius:100px;
+      background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25);
+      color:#6ee7b7; font-size:0.78rem; font-weight:600;
+      margin-bottom:20px;
+    }
+    .free-badge-dot { width:6px; height:6px; border-radius:50%; background:#6ee7b7; animation:blink 1.8s ease infinite; }
+
+    .auth-divider { height:1px; background:var(--border); margin-bottom:22px; }
+
+    .flash-msg {
+      padding:10px 14px; border-radius:var(--radius-sm);
+      font-size:0.84rem; font-weight:500; margin-bottom:16px;
+      animation:slideUp 0.3s ease both;
+    }
+    .flash-error   { background:rgba(239,68,68,0.1);  border:1px solid rgba(239,68,68,0.25);  color:#fca5a5; }
+    .flash-success { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); color:#6ee7b7; }
+
+    .form-group { margin-bottom:16px; }
+    .form-label {
+      display:block; font-size:0.78rem; font-weight:600;
+      color:var(--text-muted); text-transform:uppercase;
+      letter-spacing:0.07em; margin-bottom:8px;
+    }
+    .form-input {
+      width:100%; padding:12px 14px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid var(--border);
+      border-radius:var(--radius-sm);
+      color:var(--text-primary);
+      font-family:'Inter',sans-serif; font-size:0.92rem;
+      outline:none;
+      transition:border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+    .form-input::placeholder { color:var(--text-dim); }
+    .form-input:focus {
+      border-color:var(--border-focus);
+      background:rgba(6,182,212,0.04);
+      box-shadow:0 0 0 3px rgba(6,182,212,0.1);
+    }
+    .form-hint { font-size:0.74rem; color:var(--text-dim); margin-top:5px; }
+
+    .auth-submit {
+      width:100%; padding:13px;
+      background:linear-gradient(135deg, var(--accent), #0891b2);
+      color:white; border:none; border-radius:var(--radius-sm);
+      font-family:'Inter',sans-serif; font-size:0.95rem; font-weight:600;
+      cursor:pointer; margin-top:6px;
+      transition:transform var(--transition), box-shadow var(--transition);
+      box-shadow:0 4px 20px var(--accent-glow);
+    }
+    .auth-submit:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(6,182,212,0.4); }
+
+    .terms-note { font-size:0.74rem; color:var(--text-dim); text-align:center; margin-top:12px; }
+    .terms-note a { color:var(--text-muted); }
+
+    .auth-footer {
+      text-align:center; margin-top:22px;
+      font-size:0.84rem; color:var(--text-muted);
+    }
+    .auth-footer a { color:var(--accent-light); text-decoration:none; font-weight:500; }
+    .auth-footer a:hover { text-decoration:underline; }
+
+    .back-to-home {
+      display:inline-flex; align-items:center; gap:5px;
+      color:var(--text-dim); font-size:0.82rem; text-decoration:none;
+      margin-bottom:24px; transition:color var(--transition);
+    }
+    .back-to-home:hover { color:var(--text-muted); }
+  </style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="auth-wrap">
+  <a href="/" class="back-to-home">← Back to Home</a>
+
+  <div class="auth-card">
+    <a href="/" class="auth-logo">
+      <div class="auth-logo-icon">✉️</div>
+      <span class="auth-logo-name">FollowUpAI</span>
+    </a>
+    <div class="auth-title">Get started free</div>
+    <div class="auth-sub">Create your account in seconds.</div>
+
+    <div class="free-badge">
+      <span class="free-badge-dot"></span>
+      Free plan · 3 emails/month included
+    </div>
+
+    <div class="auth-divider"></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash-msg flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST" action="/signup">
+      <div class="form-group">
+        <label class="form-label" for="name">Full Name</label>
+        <input type="text" id="name" name="name" class="form-input"
+               placeholder="Jane Smith" required autofocus />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-input"
+               placeholder="you@example.com" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" name="password" class="form-input"
+               placeholder="At least 6 characters" required minlength="6" />
+        <div class="form-hint">Minimum 6 characters</div>
+      </div>
+      <button type="submit" class="auth-submit">Create Free Account →</button>
+      <p class="terms-note">By signing up you agree to our <a href="#">Terms of Service</a>.</p>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="/login">Sign in</a>
+    </div>
+  </div>
+
+  <p class="footer" style="margin-top:24px;">Powered by GPT-4o-mini via OpenRouter</p>
+</div>
+</body>
+</html>

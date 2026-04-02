@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FollowUpAI – Email Templates</title>
+  <meta name="description" content="Browse and use professionally crafted email templates for follow-ups, cold outreach, thank-you notes, and more." />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+    /* ── Templates Page Layout ── */
+    .templates-wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      padding: 40px 24px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── Top Nav ── */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), #0891b2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+
+    .nav-brand-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f1f5f9 30%, var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      transition: all var(--transition);
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+      border-color: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .nav-link.primary {
+      background: linear-gradient(135deg, var(--accent), #0891b2);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+
+    .nav-link.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(6,182,212,0.4);
+    }
+
+    /* ── Page Header ── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .page-header .badge {
+      margin: 0 auto 20px;
+    }
+
+    .page-title {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #f1f5f9 40%, var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 14px;
+      line-height: 1.15;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── Search & Filter Bar ── */
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 16px 0 40px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all var(--transition);
+    }
+
+    .search-input::placeholder { color: var(--text-dim); }
+
+    .search-input:focus {
+      border-color: var(--border-focus);
+      background: rgba(6,182,212,0.04);
+      box-shadow: 0 0 0 3px rgba(6,182,212,0.1);
+    }
+
+    .cat-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cat-pill {
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .cat-pill:hover {
+      color: var(--text-primary);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .cat-pill.active {
+      background: rgba(6,182,212,0.12);
+      border-color: var(--accent);
+      color: var(--accent-light);
+    }
+
+    /* ── Main Grid + Preview ── */
+    .content-area {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .content-area { grid-template-columns: 1fr; }
+      .preview-panel { position: static !important; }
+    }
+
+    /* ── Template Grid ── */
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── Template Card ── */
+    .tpl-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .tpl-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .tpl-card:hover {
+      border-color: rgba(6,182,212,0.25);
+      background: rgba(6,182,212,0.04);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(6,182,212,0.1);
+    }
+
+    .tpl-card:hover::before { opacity: 1; }
+
+    .tpl-card.selected {
+      border-color: var(--accent);
+      background: rgba(6,182,212,0.06);
+      box-shadow: 0 0 0 1px var(--accent), 0 8px 32px rgba(6,182,212,0.15);
+    }
+
+    .tpl-card.selected::before { opacity: 1; }
+
+    .tpl-card.hidden { display: none; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .tpl-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+
+    .tpl-category-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      opacity: 0.7;
+    }
+
+    .tpl-name {
+      font-size: 0.97rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .tpl-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .tpl-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tpl-tag {
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* ── Preview Panel ── */
+    .preview-panel {
+      position: sticky;
+      top: 24px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      animation: slideIn 0.5s ease 0.1s both;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .preview-header {
+      padding: 18px 22px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .preview-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .preview-dot-group {
+      display: flex;
+      gap: 5px;
+    }
+
+    .preview-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .preview-dot:nth-child(1) { background: #ff5f57; }
+    .preview-dot:nth-child(2) { background: #febc2e; }
+    .preview-dot:nth-child(3) { background: #28c840; }
+
+    .preview-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-left: 6px;
+    }
+
+    .preview-empty {
+      padding: 60px 24px;
+      text-align: center;
+      color: var(--text-dim);
+    }
+
+    .preview-empty-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    .preview-empty-text {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .preview-content {
+      display: none;
+      flex-direction: column;
+    }
+
+    .preview-content.visible {
+      display: flex;
+    }
+
+    .preview-meta {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .preview-meta-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .preview-meta-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .preview-meta-cat {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .preview-body {
+      padding: 20px 22px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      white-space: pre-wrap;
+      max-height: 340px;
+      overflow-y: auto;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-body strong {
+      color: var(--text-primary);
+    }
+
+    .preview-actions {
+      padding: 16px 22px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .preview-actions .btn {
+      flex: 1;
+      font-size: 0.85rem;
+      padding: 10px 16px;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-dim);
+    }
+
+    .empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .empty-state-text { font-size: 0.9rem; }
+
+    /* ── Count badge ── */
+    .results-count {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .results-count span {
+      color: var(--accent-light);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="toast" id="toast"></div>
+
+<div class="templates-wrap">
+
+  <!-- Top Nav -->
+  <nav class="top-nav">
+    <a href="/" class="nav-brand">
+      <div class="nav-brand-icon">✉️</div>
+      <span class="nav-brand-name">FollowUpAI</span>
+    </a>
+    <div class="nav-actions">
+      <a href="/" class="nav-link">← Home</a>
+      <a href="/app" class="nav-link primary">✨ Generate Email</a>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="badge">
+      <span class="dot"></span>
+      Template Library
+    </div>
+    <h1 class="page-title">Email Templates</h1>
+    <p class="page-subtitle">Pick a starting point, preview the structure, and generate your personalized version in seconds.</p>
+  </header>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        class="search-input"
+        id="searchInput"
+        placeholder="Search templates…"
+        oninput="filterTemplates()"
+      />
+    </div>
+    <div class="cat-pills" id="catPills">
+      <div class="cat-pill active" onclick="setCategory('all', this)">All</div>
+      <div class="cat-pill" onclick="setCategory('follow-up', this)">📝 Follow-Up</div>
+      <div class="cat-pill" onclick="setCategory('cold', this)">🚀 Cold Outreach</div>
+      <div class="cat-pill" onclick="setCategory('thank-you', this)">🙏 Thank-You</div>
+      <div class="cat-pill" onclick="setCategory('proposal', this)">📄 Proposals</div>
+      <div class="cat-pill" onclick="setCategory('re-engage', this)">🔄 Re-Engage</div>
+    </div>
+  </div>
+
+  <div class="results-count" id="resultsCount"><span id="countNum">18</span> templates available</div>
+
+  <!-- Main Content -->
+  <div class="content-area">
+    <!-- Grid -->
+    <div>
+      <div class="templates-grid" id="templatesGrid">
+        <!-- Cards injected by JS -->
+      </div>
+    </div>
+
+    <!-- Preview Panel -->
+    <div class="preview-panel" id="previewPanel">
+      <div class="preview-header">
+        <div class="preview-title-row">
+          <div class="preview-dot-group">
+            <div class="preview-dot"></div>
+            <div class="preview-dot"></div>
+            <div class="preview-dot"></div>
+          </div>
+          <span class="preview-label">Template Preview</span>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="preview-empty" id="previewEmpty">
+        <div class="preview-empty-icon">👆</div>
+        <p class="preview-empty-text">Select a template<br>to preview its structure</p>
+      </div>
+
+      <!-- Preview content -->
+      <div class="preview-content" id="previewContent">
+        <div class="preview-meta">
+          <div class="preview-meta-icon" id="previewIcon"></div>
+          <div>
+            <div class="preview-meta-title" id="previewName"></div>
+            <div class="preview-meta-cat" id="previewCat"></div>
+          </div>
+        </div>
+        <div class="preview-body" id="previewBody"></div>
+        <div class="preview-actions">
+          <button class="btn btn-primary" id="useTemplateBtn" onclick="useSelectedTemplate()">
+            ✨ Use This Template
+          </button>
+          <button class="btn btn-secondary" onclick="copyTemplate()">
+            📋 Copy
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ╔═══════════════════════════════════════════════╗
+  // ║           TEMPLATE DATA                       ║
+  // ╚═══════════════════════════════════════════════╝
+  const TEMPLATES = [
+    // ── Follow-Up ──────────────────────────────────
+    {
+      id: 'tpl-001',
+      name: 'Meeting Follow-Up',
+      category: 'follow-up',
+      icon: '📝',
+      iconBg: 'rgba(6,182,212,0.15)',
+      iconColor: '#67e8f9',
+      desc: 'Recap a business meeting with action items, owners, and next steps.',
+      tags: ['Business', 'Action Items', 'Recap'],
+      prefill: 'We had a product strategy meeting. Discussed Q3 roadmap. Sarah owns the feature spec by next Monday. John follows up with the design team this week. Next sync in 2 weeks.',
+      mode: 'followup',
+      tone: 'formal',
+      preview: `Subject: Follow-Up – [Meeting Name] | [Date]
+
+Hi [Name],
+
+Thank you for your time today. Here's a quick recap of our discussion and the key action items we aligned on.
+
+**Summary**
+• [Key discussion point 1]
+• [Key discussion point 2]
+
+**Action Items**
+→ [Owner]: [Task] — due [Date]
+→ [Owner]: [Task] — due [Date]
+
+**Next Steps**
+Our next sync is scheduled for [Date] at [Time]. Please let me know if anything needs to be adjusted.
+
+Looking forward to moving things forward!
+
+Best regards,
+[Your Name]`,
+    },
+    {
+      id: 'tpl-002',
+      name: 'Sales Follow-Up',
+      category: 'follow-up',
+      icon: '💼',
+      iconBg: 'rgba(16,185,129,0.15)',
+      iconColor: '#6ee7b7',
+      desc: 'Follow up after a sales call to keep momentum and drive next steps.',
+      tags: ['Sales', 'Demo', 'Momentum'],
+      prefill: 'Had a discovery call with a SaaS startup. They showed interest in our product. Pricing was discussed. Need to send a proposal by Thursday.',
+      mode: 'followup',
+      tone: 'sales',
+      preview: `Subject: Great Speaking With You – Next Steps Inside
+
+Hi [Name],
+
+It was a pleasure speaking with you today. Based on our conversation, I believe [Your Product] can directly address [their key pain point].
+
+**Here's What We Discussed:**
+• [Pain point they mentioned]
+• How [Product] solves it
+• Pricing overview: [tier/range]
+
+**Proposed Next Steps:**
+• I'll send the proposal by [Date]
+• We can schedule a full demo at your convenience
+• [Trial/Pilot] option is available if you'd like to test drive it
+
+Feel free to reach out with any questions. I'm confident we can make this work for your team.
+
+Cheers,
+[Your Name]`,
+    },
+    {
+      id: 'tpl-003',
+      name: 'Project Status Update',
+      category: 'follow-up',
+      icon: '📊',
+      iconBg: 'rgba(99,102,241,0.15)',
+      iconColor: '#a5b4fc',
+      desc: 'Keep stakeholders in the loop with a clean project status summary.',
+      tags: ['Project', 'Stakeholders', 'Update'],
+      prefill: 'We have completed 60% of the mobile app redesign. Backend API integration is on track. UI components delayed by 3 days due to design revisions.',
+      mode: 'followup',
+      tone: 'formal',
+      preview: `Subject: [Project Name] – Status Update [Week/Date]
+
+Hi Team,
+
+Here's the latest status update for **[Project Name]**.
+
+**Overall Progress:** 🟡 On Track / Minor Delays
+
+**Completed This Week:**
+✅ [Task 1]
+✅ [Task 2]
+
+**In Progress:**
+🔄 [Task 3] – ETA: [Date]
+🔄 [Task 4] – ETA: [Date]
+
+**Blockers / Risks:**
+⚠️ [Issue] – mitigation: [plan]
+
+**Next Week Goals:**
+• [Goal 1]
+• [Goal 2]
+
+Let me know if you have any questions.
+
+Best,
+[Your Name]`,
+    },
+    {
+      id: 'tpl-004',
+      name: 'Interview Follow-Up',
+      category: 'follow-up',
+      icon: '🏢',
+      iconBg: 'rgba(245,158,11,0.15)',
+      iconColor: '#fcd34d',
+      desc: 'Stand out after a job interview with a thoughtful, professional follow-up.',
+      tags: ['Career', 'Interview', 'Professional'],
+      prefill: 'I interviewed for a Senior Product Manager role at TechCorp. Discussed my experience leading product teams. The interviewer was Sarah Johnson. Great conversation about their growth roadmap.',
+      mode: 'followup',
+      tone: 'formal',
+      preview: `Subject: Thank You – Senior Product Manager Interview
+
+Dear [Interviewer Name],
+
+Thank you for taking the time to speak with me today about the [Role] position at [Company]. I genuinely enjoyed our conversation, particularly the discussion about [specific topic mentioned].
+
+Our talk reinforced my enthusiasm for this opportunity. My background in [relevant skill/experience] aligns closely with the challenges you described, and I'm excited about the possibility of contributing to [specific company goal].
+
+I remain very interested in joining [Company] and would welcome the chance to discuss next steps. Please don't hesitate to reach out if you need any additional information.
+
+Thank you again for your consideration.
+
+Warm regards,
+[Your Name]`,
+    },
+
+    // ── Cold Outreach ──────────────────────────────
+    {
+      id: 'tpl-005',
+      name: 'Classic Cold Pitch',
+      category: 'cold',
+      icon: '🚀',
+      iconBg: 'rgba(239,68,68,0.15)',
+      iconColor: '#fca5a5',
+      desc: 'A proven cold email framework with a strong hook and clear CTA.',
+      tags: ['Cold', 'Outreach', 'B2B'],
+      prefill: 'Reaching out to VP of Marketing at e-commerce brands. I offer an AI tool that reduces email production time by 70%. Goal is to book a 15-min demo.',
+      mode: 'cold',
+      tone: 'sales',
+      preview: `Subject: [Specific outcome] for [Company Name]?
+
+Hi [First Name],
+
+I noticed [personalized observation about their company].
+
+Most [their role] I speak with struggle with [pain point]. Our platform helps companies like [Reference Co.] achieve [specific result] in [timeframe].
+
+**Why this matters for you:**
+→ [Benefit 1 relevant to them]
+→ [Benefit 2 relevant to them]
+
+Would you be open to a quick 15-min call this week to explore if there's a fit?
+
+[Your Name]
+[Title] | [Company]`,
+    },
+    {
+      id: 'tpl-006',
+      name: 'Partnership Outreach',
+      category: 'cold',
+      icon: '🤝',
+      iconBg: 'rgba(16,185,129,0.15)',
+      iconColor: '#6ee7b7',
+      desc: 'Propose a strategic partnership or collaboration to a new contact.',
+      tags: ['Partnership', 'Collaboration', 'B2B'],
+      prefill: 'Want to propose a co-marketing partnership with a SaaS newsletter with 50k subscribers. We have an AI writing product. Mutual audience overlap is strong.',
+      mode: 'cold',
+      tone: 'friendly',
+      preview: `Subject: Mutual Win? Partnership Idea for [Their Brand] + [Your Brand]
+
+Hi [Name],
+
+I've been following [Their Brand] and love what you're building for [audience]. Your recent [piece of content / product launch] really resonated with us.
+
+I'm reaching out because I think there's a genuine opportunity for us to collaborate. Here's the quick pitch:
+
+**The Idea:** [Short 1-2 sentence description]
+
+**What's in it for you:**
+• [Benefit 1]
+• [Benefit 2]
+
+**What we bring:**
+• [Your asset 1]
+• [Your asset 2]
+
+Would you be open to a 20-minute exploratory call? Happy to work around your schedule.
+
+Best,
+[Your Name]`,
+    },
+    {
+      id: 'tpl-007',
+      name: 'Investor Outreach',
+      category: 'cold',
+      icon: '💰',
+      iconBg: 'rgba(245,158,11,0.15)',
+      iconColor: '#fcd34d',
+      desc: 'Craft a compelling investor cold email for your fundraising round.',
+      tags: ['Fundraising', 'Startup', 'VC'],
+      prefill: 'I am raising a $500K pre-seed for my AI productivity startup. We have 200 paying customers, $8K MRR, and growing 20% month-over-month.',
+      mode: 'cold',
+      tone: 'formal',
+      preview: `Subject: [Startup Name] – Pre-Seed Round | AI + [Market]
+
+Hi [Investor Name],
+
+I'm reaching out because [specific reason you're targeting them — portfolio fit, shared thesis, etc.].
+
+**[Startup Name]** is [one-line description of what you do and for whom].
+
+**Traction:**
+• [Revenue / users metric]
+• [Growth rate]
+• [Key customer logo or use case]
+
+**The Ask:** We're raising $[X] to [specific use of funds].
+
+Our round is [X]% committed. I'd love 20 minutes to walk you through the vision and numbers.
+
+Are you available for a quick call this week?
+
+Best,
+[Your Name]
+[Startup] | [Website]`,
+    },
+    {
+      id: 'tpl-008',
+      name: 'Recruitment Outreach',
+      category: 'cold',
+      icon: '🎯',
+      iconBg: 'rgba(99,102,241,0.15)',
+      iconColor: '#a5b4fc',
+      desc: 'Reach out to passive candidates for a role you\'re hiring for.',
+      tags: ['Recruiting', 'Hiring', 'Talent'],
+      prefill: 'Looking for a senior full-stack engineer with React and Node.js experience. Found a strong candidate on LinkedIn working at Stripe. We\'re a Series B startup with great culture.',
+      mode: 'cold',
+      tone: 'friendly',
+      preview: `Subject: Your background caught my eye – [Role] at [Company]
+
+Hi [Name],
+
+I came across your profile and was genuinely impressed by your work at [Their Company], especially [specific project or skill].
+
+We're building something exciting at [Company] — [one-line pitch of company/mission] — and I think your background in [skill] would be a fantastic fit for our [Role] opening.
+
+**Why people love working here:**
+• [Culture/perk point]
+• [Growth opportunity]
+• [Tech stack / interesting problem]
+
+Even if you're not actively looking, I'd love to set up an informal chat. Sometimes it's just worth exploring.
+
+Would 15-20 minutes work this week?
+
+[Your Name]`,
+    },
+
+    // ── Thank-You ──────────────────────────────────
+    {
+      id: 'tpl-009',
+      name: 'Post-Meeting Thank You',
+      category: 'thank-you',
+      icon: '🙏',
+      iconBg: 'rgba(236,72,153,0.15)',
+      iconColor: '#f9a8d4',
+      desc: 'A warm, professional thank-you email to send after any meeting.',
+      tags: ['Gratitude', 'Relationship', 'Professional'],
+      prefill: 'Had a great introductory call with a potential client who shared their company challenges. The conversation was insightful and I want to leave a positive impression.',
+      mode: 'followup',
+      tone: 'friendly',
+      preview: `Subject: Thank You for Your Time, [Name]
+
+Hi [Name],
+
+I just wanted to send a quick note to say how much I appreciated our conversation today.
+
+[Personalized sentence about what you took away or found interesting.]
+
+I'll be following up with [promised deliverable / resource] by [date]. In the meantime, please feel free to reach out if any questions come to mind.
+
+Looking forward to staying in touch!
+
+Warmly,
+[Your Name]`,
+    },
+    {
+      id: 'tpl-010',
+      name: 'Client Thank You',
+      category: 'thank-you',
+      icon: '⭐',
+      iconBg: 'rgba(245,158,11,0.15)',
+      iconColor: '#fcd34d',
+      desc: 'Appreciate a long-term client and reinforce your working relationship.',
+      tags: ['Client', 'Retention', 'Relationship'],
+      prefill: 'Writing to thank a 2-year client who just renewed their contract. They\'ve been an amazing partner throughout our work together on digital marketing campaigns.',
+      mode: 'followup',
+      tone: 'friendly',
+      preview: `Subject: Thank You for Choosing Us Again, [Name] 🙌
+
+Hi [Name],
+
+We just wanted to take a moment to personally thank you for renewing with us. Working with [Their Company] has genuinely been a highlight for our team.
+
+Over the past [timeframe], we've accomplished [key wins together], and we're excited about what's ahead in [upcoming project/goal].
+
+We never take your trust for granted, and we're committed to delivering even more value in [Year/Period].
+
+As always, we're here whenever you need us.
+
+With gratitude,
+[Your Name]
+[Title] | [Company]`,
+    },
+    {
+      id: 'tpl-011',
+      name: 'Speaker / Event Thank You',
+      category: 'thank-you',
+      icon: '🎤',
+      iconBg: 'rgba(6,182,212,0.15)',
+      iconColor: '#67e8f9',
+      desc: 'Thank a keynote speaker or event participant for their contribution.',
+      tags: ['Event', 'Speaker', 'Community'],
+      prefill: 'Thanking a keynote speaker who presented at our annual product summit. Their talk on AI and the future of work was extremely well-received by 300 attendees.',
+      mode: 'followup',
+      tone: 'friendly',
+      preview: `Subject: Thank You for an Incredible Talk at [Event Name]
+
+Hi [Speaker Name],
+
+On behalf of the entire [Event/Organization] team, I wanted to extend our sincere gratitude for your keynote at [Event Name].
+
+Your insights on [topic] were exactly what our audience needed to hear. The feedback has been overwhelmingly positive — many attendees called it the highlight of the event.
+
+[Personalized detail: a moment that stood out, a comment from attendees, etc.]
+
+We'd love to collaborate again in the future. In the meantime, we'll share the recording and session highlights with you.
+
+Thank you again for sharing your expertise with us.
+
+Warm regards,
+[Your Name]`,
+    },
+
+    // ── Proposals ─────────────────────────────────
+    {
+      id: 'tpl-012',
+      name: 'Service Proposal',
+      category: 'proposal',
+      icon: '📄',
+      iconBg: 'rgba(99,102,241,0.15)',
+      iconColor: '#a5b4fc',
+      desc: 'Send a structured service proposal to a prospective client.',
+      tags: ['Proposal', 'Agency', 'Services'],
+      prefill: 'Sending a content marketing proposal to a fintech startup. Our scope includes 8 blog posts/month, SEO optimization, and a monthly analytics report. Pricing is $3,500/month.',
+      mode: 'followup',
+      tone: 'formal',
+      preview: `Subject: Proposal: [Service Name] for [Client Company]
+
+Hi [Name],
+
+Following our conversation, I'm pleased to share our proposal for [Service] tailored to [Client Company]'s goals.
+
+**Scope of Work**
+1. [Deliverable 1] — [brief description]
+2. [Deliverable 2] — [brief description]
+3. [Deliverable 3] — [brief description]
+
+**Timeline**
+• Start Date: [Date]
+• Milestone 1: [Date]
+• Project Completion: [Date]
+
+**Investment**
+[Tier/Package Name]: $[Amount] / [month/project]
+Includes: [Key inclusions]
+
+**Next Steps**
+If this aligns with your vision, we can move forward with a signed agreement and kick off on [Date]. Happy to adjust scope based on your priorities.
+
+Looking forward to working together.
+
+Best,
+[Your Name]`,
+    },
+    {
+      id: 'tpl-013',
+      name: 'Budget Approval Request',
+      category: 'proposal',
+      icon: '💳',
+      iconBg: 'rgba(16,185,129,0.15)',
+      iconColor: '#6ee7b7',
+      desc: 'Request budget approval from stakeholders with a clear business case.',
+      tags: ['Budget', 'Internal', 'Approval'],
+      prefill: 'Requesting $15,000 budget for a new CRM tool that will reduce manual data entry by 40% and improve the sales team\'s productivity. Current team is 12 reps.',
+      mode: 'followup',
+      tone: 'formal',
+      preview: `Subject: Budget Approval Request – [Tool/Project Name]
+
+Hi [Manager/Stakeholder Name],
+
+I'd like to request approval for a budget of **$[Amount]** for [Tool/Project].
+
+**Business Case**
+[Current challenge or inefficiency we're solving]
+
+**Proposed Solution**
+[Tool or project name and what it does]
+
+**Expected ROI / Impact**
+• [Metric improvement 1 — e.g., saves X hours/week]
+• [Metric improvement 2 — e.g., reduces cost by $X]
+
+**Cost Breakdown**
+• [Line item 1]: $[X]
+• [Line item 2]: $[X]
+• **Total**: $[Amount]
+
+I'm confident this investment will pay for itself within [timeframe]. Happy to walk through the details at your convenience.
+
+Thank you for considering this.
+
+Best,
+[Your Name]`,
+    },
+
+    // ── Re-Engage ─────────────────────────────────
+    {
+      id: 'tpl-014',
+      name: 'Re-Engage Cold Lead',
+      category: 're-engage',
+      icon: '🔄',
+      iconBg: 'rgba(245,158,11,0.15)',
+      iconColor: '#fcd34d',
+      desc: 'Rekindle interest from a prospect who went quiet after initial contact.',
+      tags: ['Sales', 'Re-Engage', 'Pipeline'],
+      prefill: 'A prospect who showed strong interest 2 months ago suddenly went quiet. They were evaluating our project management tool for their 50-person engineering team.',
+      mode: 'cold',
+      tone: 'friendly',
+      preview: `Subject: Still Exploring [Solution]?
+
+Hi [Name],
+
+I hope you've been doing well since we last spoke in [Month].
+
+I wanted to check in — has anything changed on your end regarding [problem they were solving]? We've shipped some updates since then that I think would be particularly relevant for your team:
+
+✅ [New feature 1 relevant to them]
+✅ [New feature 2]
+
+No pressure at all. If the timing isn't right, completely understood. But if you're ready to pick up where we left off, I'd love to reconnect for a quick 15 minutes.
+
+Worth a conversation?
+
+[Your Name]`,
+    },
+    {
+      id: 'tpl-015',
+      name: 'Dormant Client Win-Back',
+      category: 're-engage',
+      icon: '♻️',
+      iconBg: 'rgba(6,182,212,0.15)',
+      iconColor: '#67e8f9',
+      desc: 'Win back a past client who churned or went inactive.',
+      tags: ['Re-activation', 'Churn', 'Client'],
+      prefill: 'Previous client who used our marketing automation software 8 months ago. They left due to pricing concerns. We now offer a new pricing tier that may work better for them.',
+      mode: 'cold',
+      tone: 'friendly',
+      preview: `Subject: Things Have Changed at [Your Company] – Worth Another Look?
+
+Hi [Name],
+
+It's been a while since we worked together, and I've been thinking about [Client Company].
+
+I know pricing was a concern when you left, and I wanted to let you know — we've made some significant changes that address exactly that.
+
+**What's New:**
+• [New pricing tier / flexible option]
+• [Product improvement]
+• [Support improvement]
+
+We'd love a chance to earn your business back. If you're open to it, I'd love to walk you through what's changed in just 20 minutes.
+
+No obligation — just a genuine conversation.
+
+Best,
+[Your Name]`,
+    },
+    {
+      id: 'tpl-016',
+      name: 'Conference Connection',
+      category: 're-engage',
+      icon: '🎪',
+      iconBg: 'rgba(236,72,153,0.15)',
+      iconColor: '#f9a8d4',
+      desc: 'Follow up with someone you briefly met at an event or conference.',
+      tags: ['Networking', 'Event', 'Connection'],
+      prefill: 'Met a potential client at Web Summit 2024. Had a 10-minute conversation about their marketing challenges. They seemed interested in exploring a collaboration.',
+      mode: 'followup',
+      tone: 'friendly',
+      preview: `Subject: Great Meeting You at [Conference Name]!
+
+Hi [Name],
+
+It was great connecting with you at [Conference] last [week/month]! I really enjoyed our chat about [specific topic you discussed].
+
+As promised, here's [the resource / link / follow-up item you mentioned].
+
+I'd love to continue the conversation and explore how we might be able to help with [their challenge]. Would a 20-minute call work for you sometime this week?
+
+Looking forward to staying in touch!
+
+Best,
+[Your Name]`,
+    },
+    {
+      id: 'tpl-017',
+      name: 'Upsell / Expansion',
+      category: 're-engage',
+      icon: '📈',
+      iconBg: 'rgba(16,185,129,0.15)',
+      iconColor: '#6ee7b7',
+      desc: 'Identify an upsell opportunity and pitch it to an existing client.',
+      tags: ['Upsell', 'Expansion', 'Revenue'],
+      prefill: 'Current client on our Starter plan. They\'ve grown from 5 to 30 users over 6 months. Good time to introduce our Pro plan which includes advanced analytics and priority support.',
+      mode: 'cold',
+      tone: 'friendly',
+      preview: `Subject: You've Outgrown Starter – Here's What's Next 🚀
+
+Hi [Name],
+
+Congrats on the growth! I noticed your team has scaled from [X] to [Y] users in the past [timeframe] — that's amazing progress.
+
+As you grow, I wanted to reach out because I think you might be hitting the limits of your current [Starter] plan, and I'd love to make sure [Company Name] has everything it needs to keep scaling.
+
+**[Pro Plan] includes:**
+✅ [Feature relevant to growth]
+✅ [Feature they're likely missing]
+✅ Priority support
+
+The upgrade is [price], which works out to [price per user] — significantly less than adding another tool.
+
+Can I send over a quick comparison, or jump on a call to walk you through it?
+
+[Your Name]`,
+    },
+    {
+      id: 'tpl-018',
+      name: 'Referral Request',
+      category: 're-engage',
+      icon: '🌟',
+      iconBg: 'rgba(245,158,11,0.15)',
+      iconColor: '#fcd34d',
+      desc: 'Ask a happy customer to refer others to your product or service.',
+      tags: ['Referral', 'Growth', 'Customer'],
+      prefill: 'Long-time customer who has been using our design tool for 18 months and consistently leaves 5-star reviews. Want to introduce them to our referral program.',
+      mode: 'cold',
+      tone: 'friendly',
+      preview: `Subject: Can I Ask You a Small Favor?
+
+Hi [Name],
+
+I hope things are going well! I've loved seeing how you've used [Product] over the past [X months].
+
+We're growing and I wanted to reach out to our favorite customers — like you — to ask if you know anyone who might benefit from what we do.
+
+**Our referral program:**
+For every friend who signs up, you both get [incentive — discount, credits, etc.].
+
+All you have to do is share your unique link: [link]
+
+Of course, no pressure at all. But if you've found [Product] valuable, sharing it is the biggest compliment you can give us.
+
+Thank you so much for being an amazing customer 🙏
+
+[Your Name]`,
+    },
+  ];
+
+  // ╔═══════════════════════════════════════════════╗
+  // ║           STATE                               ║
+  // ╚═══════════════════════════════════════════════╝
+  let currentCategory = 'all';
+  let selectedTemplate = null;
+
+  // ╔═══════════════════════════════════════════════╗
+  // ║           RENDER                              ║
+  // ╚═══════════════════════════════════════════════╝
+  function renderTemplates(list) {
+    const grid = document.getElementById('templatesGrid');
+    grid.innerHTML = '';
+
+    if (list.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">🔍</div>
+          <p class="empty-state-text">No templates found. Try a different search.</p>
+        </div>`;
+      document.getElementById('countNum').textContent = '0';
+      return;
+    }
+
+    document.getElementById('countNum').textContent = list.length;
+
+    list.forEach((tpl, i) => {
+      const card = document.createElement('div');
+      card.className = 'tpl-card';
+      card.id = tpl.id;
+      card.style.animationDelay = `${i * 0.04}s`;
+      card.onclick = () => selectTemplate(tpl);
+      card.innerHTML = `
+        <div class="tpl-icon" style="background:${tpl.iconBg}; color:${tpl.iconColor};">${tpl.icon}</div>
+        <div class="tpl-category-tag" style="color:${tpl.iconColor};">${formatCategory(tpl.category)}</div>
+        <div class="tpl-name">${tpl.name}</div>
+        <div class="tpl-desc">${tpl.desc}</div>
+        <div class="tpl-tags">${tpl.tags.map(t => `<span class="tpl-tag">${t}</span>`).join('')}</div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function formatCategory(cat) {
+    const map = {
+      'follow-up': '📝 Follow-Up',
+      'cold': '🚀 Cold Outreach',
+      'thank-you': '🙏 Thank-You',
+      'proposal': '📄 Proposal',
+      're-engage': '🔄 Re-Engage',
+    };
+    return map[cat] || cat;
+  }
+
+  // ╔═══════════════════════════════════════════════╗
+  // ║           FILTER                              ║
+  // ╚═══════════════════════════════════════════════╝
+  function getFiltered() {
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    return TEMPLATES.filter(t => {
+      const matchCat = currentCategory === 'all' || t.category === currentCategory;
+      const matchSearch = !q || t.name.toLowerCase().includes(q)
+        || t.desc.toLowerCase().includes(q)
+        || t.tags.some(tag => tag.toLowerCase().includes(q))
+        || t.category.toLowerCase().includes(q);
+      return matchCat && matchSearch;
+    });
+  }
+
+  function filterTemplates() {
+    renderTemplates(getFiltered());
+    // Re-apply selected highlight
+    if (selectedTemplate) {
+      const card = document.getElementById(selectedTemplate.id);
+      if (card) card.classList.add('selected');
+    }
+  }
+
+  function setCategory(cat, el) {
+    currentCategory = cat;
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    filterTemplates();
+  }
+
+  // ╔═══════════════════════════════════════════════╗
+  // ║           SELECT / PREVIEW                    ║
+  // ╚═══════════════════════════════════════════════╝
+  function selectTemplate(tpl) {
+    // Deselect previous
+    if (selectedTemplate) {
+      const prev = document.getElementById(selectedTemplate.id);
+      if (prev) prev.classList.remove('selected');
+    }
+
+    selectedTemplate = tpl;
+    const card = document.getElementById(tpl.id);
+    if (card) card.classList.add('selected');
+
+    // Show preview
+    document.getElementById('previewEmpty').style.display = 'none';
+    const content = document.getElementById('previewContent');
+    content.classList.add('visible');
+
+    document.getElementById('previewIcon').textContent = tpl.icon;
+    document.getElementById('previewIcon').style.background = tpl.iconBg;
+
+    document.getElementById('previewName').textContent = tpl.name;
+    document.getElementById('previewCat').textContent = formatCategory(tpl.category);
+
+    // Render preview with bold support
+    const bodyEl = document.getElementById('previewBody');
+    bodyEl.innerHTML = tpl.preview.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    // Scroll preview into view on mobile
+    if (window.innerWidth < 900) {
+      document.getElementById('previewPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // ╔═══════════════════════════════════════════════╗
+  // ║           USE TEMPLATE                        ║
+  // ╚═══════════════════════════════════════════════╝
+  function useSelectedTemplate() {
+    if (!selectedTemplate) return;
+    // Store prefill + mode + tone in sessionStorage
+    sessionStorage.setItem('templatePrefill', selectedTemplate.prefill);
+    sessionStorage.setItem('templateMode', selectedTemplate.mode);
+    sessionStorage.setItem('templateTone', selectedTemplate.tone);
+    window.location.href = '/app';
+  }
+
+  // ╔═══════════════════════════════════════════════╗
+  // ║           COPY PREVIEW                        ║
+  // ╚═══════════════════════════════════════════════╝
+  function copyTemplate() {
+    if (!selectedTemplate) return;
+    navigator.clipboard.writeText(selectedTemplate.preview).then(() => {
+      showToast('📋 Template structure copied!');
+    }).catch(() => {
+      showToast('📋 Copied!');
+    });
+  }
+
+  // ╔═══════════════════════════════════════════════╗
+  // ║           TOAST                               ║
+  // ╚═══════════════════════════════════════════════╝
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ╔═══════════════════════════════════════════════╗
+  // ║           INIT                                ║
+  // ╚═══════════════════════════════════════════════╝
+  renderTemplates(TEMPLATES);
+</script>
+
+</body>
+</html>

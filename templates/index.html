@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FollowUpAI – Generate Emails</title>
+  <meta name="description" content="Generate professional follow-up or cold outreach emails from meeting transcripts using AI." />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+    /* ── Mode Toggle ── */
+    .mode-toggle {
+      display: flex;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 24px;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 9px 14px;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.22s ease;
+    }
+    .mode-btn.active {
+      background: linear-gradient(135deg, var(--accent), #0891b2);
+      color: white;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+
+    /* ── Tone pills ── */
+    .tone-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .tone-pill {
+      padding: 6px 16px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .tone-pill:hover { border-color: rgba(255,255,255,0.2); color: var(--text-primary); }
+    .tone-pill.active {
+      border-color: var(--accent);
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--accent-light);
+    }
+
+    /* ── Section label row ── */
+    .section-info {
+      background: rgba(6, 182, 212, 0.07);
+      border: 1px solid rgba(6, 182, 212, 0.15);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="toast" id="toast"></div>
+
+<div class="page-wrap">
+  <div class="card" id="mainCard">
+
+    <!-- User nav bar -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+      <a href="/" style="color:var(--text-muted); font-size:0.84rem; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:5px; transition:color var(--transition);" onmouseover="this.style.color='var(--text-primary)';" onmouseout="this.style.color='var(--text-muted)';">← Home</a>
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        {% if user.is_pro %}
+          <span style="display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:100px; background:rgba(6,182,212,0.12); border:1px solid rgba(6,182,212,0.25); font-size:0.72rem; font-weight:700; color:var(--accent-light); text-transform:uppercase; letter-spacing:0.06em;">★ Pro</span>
+        {% else %}
+          <span style="display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:100px; background:rgba(255,255,255,0.04); border:1px solid var(--border); font-size:0.72rem; font-weight:600; color:var(--text-muted);">{{ user.emails_remaining }} email{{ 's' if user.emails_remaining != 1 else '' }} left</span>
+        {% endif %}
+        <a href="/account" style="color:var(--text-muted); font-size:0.82rem; font-weight:500; text-decoration:none; padding:5px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); background:rgba(255,255,255,0.02); transition:all var(--transition);" onmouseover="this.style.color='var(--text-primary)';" onmouseout="this.style.color='var(--text-muted)';">👤 {{ user.name.split()[0] }}</a>
+        <a href="/templates" style="color:var(--text-muted); font-size:0.82rem; font-weight:500; text-decoration:none; padding:5px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); background:rgba(255,255,255,0.02); transition:all var(--transition);" onmouseover="this.style.color='var(--text-primary)';" onmouseout="this.style.color='var(--text-muted)';">📋 Templates</a>
+      </div>
+    </div>
+
+    <div class="badge">
+      <span class="dot"></span>
+      AI-Powered
+    </div>
+
+    <div class="brand">
+      <div class="brand-icon">✉️</div>
+      <h1 class="brand-name">FollowUpAI</h1>
+    </div>
+    <p class="subtitle">Choose your email type, set the tone, and generate in seconds.</p>
+
+    <div class="divider"></div>
+
+    <form method="POST" action="/upload" id="uploadForm">
+      <!-- Hidden fields -->
+      <input type="hidden" name="mode" id="modeInput" value="followup" />
+      <input type="hidden" name="tone" id="toneInput" value="formal" />
+
+      <!-- Mode toggle -->
+      <div class="mode-toggle">
+        <button type="button" class="mode-btn active" id="btnFollowup" onclick="setMode('followup')">
+          📝 Follow-Up Email
+        </button>
+        <button type="button" class="mode-btn" id="btnCold" onclick="setMode('cold')">
+          🚀 Cold Outreach
+        </button>
+      </div>
+
+      <!-- Contextual hint -->
+      <div class="section-info" id="modeHint">
+        Paste your <strong style="color:var(--text-primary)">meeting transcript</strong> below and we'll extract action items, next steps, and craft a professional follow-up.
+      </div>
+
+      <!-- Tone selection -->
+      <div class="field-label" style="margin-bottom:10px;">
+        <span>Tone</span>
+      </div>
+      <div class="tone-row" id="toneRow">
+        <div class="tone-pill active" onclick="setTone('formal', this)">🎩 Formal</div>
+        <div class="tone-pill" onclick="setTone('friendly', this)">😊 Friendly</div>
+        <div class="tone-pill" onclick="setTone('sales', this)">💼 Sales</div>
+      </div>
+
+      <!-- Textarea -->
+      <div class="field-label">
+        <span id="textareaLabel">Meeting Transcript</span>
+        <span class="char-count" id="charCount">0 characters</span>
+      </div>
+
+      <textarea
+        id="transcript"
+        name="transcript"
+        placeholder="Paste your meeting notes or transcript here…"
+        required
+        autofocus
+      ></textarea>
+
+      <div class="progress-bar-wrap" id="progressWrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <div class="spinner" id="spinner"></div>
+        <span class="btn-text" id="btnText">✨ Generate Email</span>
+      </button>
+    </form>
+
+  </div>
+  <p class="footer">Powered by GPT-4o-mini via OpenRouter</p>
+</div>
+
+<script>
+  // ── Mode switching ──
+  const modeHints = {
+    followup: 'Paste your <strong style="color:var(--text-primary)">meeting transcript</strong> below and we\'ll extract action items, next steps, and craft a professional follow-up.',
+    cold: 'Describe your <strong style="color:var(--text-primary)">target, goal, and value prop</strong>. We\'ll write a compelling cold email with a strong hook and CTA.',
+  };
+  const modeLabels = { followup: 'Meeting Transcript', cold: 'Your Goal / Context' };
+  const modePlaceholders = {
+    followup: 'Paste your meeting notes or transcript here…\n\nExample: We discussed Q2 targets. John handles marketing deck by Friday. Next sync Thursday 3pm.',
+    cold: 'Example: I want to reach out to VP of Sales at SaaS startups. I\'m offering an AI email tool that saves 2hrs/day. Goal is to book a demo call.',
+  };
+
+  function setMode(mode) {
+    document.getElementById('modeInput').value = mode;
+    document.getElementById('btnFollowup').classList.toggle('active', mode === 'followup');
+    document.getElementById('btnCold').classList.toggle('active', mode === 'cold');
+    document.getElementById('modeHint').innerHTML = modeHints[mode];
+    document.getElementById('textareaLabel').textContent = modeLabels[mode];
+    document.getElementById('transcript').placeholder = modePlaceholders[mode];
+    document.getElementById('transcript').value = '';
+    updateCharCount();
+  }
+
+  // ── Tone switching ──
+  function setTone(tone, el) {
+    document.getElementById('toneInput').value = tone;
+    document.querySelectorAll('.tone-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ── Template prefill from templates / landing page ──
+  const prefill = sessionStorage.getItem('templatePrefill');
+  if (prefill) {
+    const ta = document.getElementById('transcript');
+    ta.value = prefill;
+    sessionStorage.removeItem('templatePrefill');
+
+    // Restore mode
+    const savedMode = sessionStorage.getItem('templateMode');
+    if (savedMode) {
+      setMode(savedMode);
+      sessionStorage.removeItem('templateMode');
+    }
+
+    // Restore tone
+    const savedTone = sessionStorage.getItem('templateTone');
+    if (savedTone) {
+      const pill = [...document.querySelectorAll('.tone-pill')].find(
+        p => p.getAttribute('onclick') && p.getAttribute('onclick').includes(savedTone)
+      );
+      if (pill) setTone(savedTone, pill);
+      sessionStorage.removeItem('templateTone');
+    }
+
+    setTimeout(() => ta.dispatchEvent(new Event('input')), 50);
+  }
+
+  // ── Character counter ──
+  const transcript = document.getElementById('transcript');
+  const charCount  = document.getElementById('charCount');
+  function updateCharCount() {
+    const len = transcript.value.length;
+    charCount.textContent = len.toLocaleString() + ' character' + (len === 1 ? '' : 's');
+    charCount.classList.toggle('active', len > 0);
+  }
+  transcript.addEventListener('input', updateCharCount);
+
+  // ── Form submit with loading state ──
+  const form         = document.getElementById('uploadForm');
+  const submitBtn    = document.getElementById('submitBtn');
+  const spinner      = document.getElementById('spinner');
+  const btnText      = document.getElementById('btnText');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar  = document.getElementById('progressBar');
+
+  const loadingMessages = [
+    '✨ Generating Email…', '🧠 Analyzing Content…',
+    '📝 Drafting Email…', '📬 Finalizing…'
+  ];
+  let msgIdx = 0;
+
+  form.addEventListener('submit', (e) => {
+    if (!transcript.value.trim()) {
+      e.preventDefault();
+      showToast('⚠️ Please enter some content first.', 'warn');
+      return;
+    }
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+    spinner.style.display = 'block';
+    btnText.textContent = loadingMessages[0];
+    setInterval(() => { msgIdx = (msgIdx+1)%loadingMessages.length; btnText.textContent = loadingMessages[msgIdx]; }, 1800);
+
+    progressWrap.classList.add('visible');
+    let p = 0;
+    const pi = setInterval(() => {
+      p = Math.min(p + (p < 70 ? 2.5 : p < 88 ? 0.6 : 0.1), 92);
+      progressBar.style.width = p + '%';
+    }, 120);
+    window.addEventListener('beforeunload', () => { clearInterval(pi); progressBar.style.width = '100%'; });
+  });
+
+  // ── Card 3D tilt ──
+  const card = document.getElementById('mainCard');
+  document.addEventListener('mousemove', (e) => {
+    const r = card.getBoundingClientRect();
+    const dx = (e.clientX - (r.left + r.width/2)) / (window.innerWidth/2);
+    const dy = (e.clientY - (r.top + r.height/2)) / (window.innerHeight/2);
+    card.style.transform = `perspective(1000px) rotateY(${dx*2.5}deg) rotateX(${-dy*2}deg)`;
+  });
+  document.addEventListener('mouseleave', () => { card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)'; });
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = 'rgba(251,191,36,0.12)';
+    t.style.color = '#fcd34d';
+    t.style.borderColor = 'rgba(251,191,36,0.25)';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+
+</body>
+</html>

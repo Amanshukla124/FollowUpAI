@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Account – FollowUpAI</title>
+  <meta name="description" content="Manage your FollowUpAI account, plan, and billing." />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+    .account-wrap {
+      position:relative; z-index:1;
+      min-height:100vh; padding:40px 24px 80px;
+      max-width:700px; margin:0 auto;
+    }
+
+    /* ── Top Nav ── */
+    .account-nav {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:48px;
+    }
+    .account-nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .account-nav-icon {
+      width:34px; height:34px;
+      background:linear-gradient(135deg, var(--accent), #0891b2);
+      border-radius:8px; display:flex; align-items:center;
+      justify-content:center; font-size:15px;
+      box-shadow:0 2px 10px var(--accent-glow);
+    }
+    .account-nav-name {
+      font-size:1.05rem; font-weight:700;
+      background:linear-gradient(135deg, #f1f5f9 30%, var(--accent-light));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .account-nav-links { display:flex; gap:10px; }
+    .account-nav-link {
+      color:var(--text-muted); text-decoration:none;
+      font-size:0.84rem; font-weight:500;
+      padding:7px 14px; border-radius:var(--radius-sm);
+      border:1px solid var(--border); background:rgba(255,255,255,0.02);
+      transition:all var(--transition);
+    }
+    .account-nav-link:hover { color:var(--text-primary); }
+    .account-nav-link.primary {
+      background:linear-gradient(135deg, var(--accent), #0891b2);
+      color:white; border-color:transparent; box-shadow:0 2px 12px var(--accent-glow);
+    }
+    .account-nav-link.primary:hover { transform:translateY(-1px); }
+
+    /* ── Header ── */
+    .account-header { margin-bottom:36px; }
+    .account-greeting { font-size:1.6rem; font-weight:800; letter-spacing:-0.03em; color:var(--text-primary); margin-bottom:4px; }
+    .account-email    { font-size:0.88rem; color:var(--text-muted); }
+
+    /* ── Flash ── */
+    .flash-msg {
+      padding:12px 16px; border-radius:var(--radius-sm);
+      font-size:0.875rem; font-weight:500; margin-bottom:20px;
+      animation:slideUp 0.3s ease both;
+    }
+    .flash-success { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); color:#6ee7b7; }
+    .flash-error   { background:rgba(239,68,68,0.1);  border:1px solid rgba(239,68,68,0.25);  color:#fca5a5; }
+
+    /* ── Sections ── */
+    .account-section {
+      background:rgba(255,255,255,0.03);
+      border:1px solid var(--border);
+      border-radius:var(--radius-md);
+      padding:28px 28px;
+      margin-bottom:20px;
+      animation:slideUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .account-section:nth-child(2){ animation-delay:0.05s; }
+    .account-section:nth-child(3){ animation-delay:0.10s; }
+    .section-title {
+      font-size:0.75rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:0.1em; color:var(--text-dim); margin-bottom:20px;
+    }
+
+    /* ── Plan badge ── */
+    .plan-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+    .plan-info { display:flex; align-items:center; gap:14px; }
+    .plan-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 14px; border-radius:100px;
+      font-size:0.8rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+    }
+    .plan-badge.free {
+      background:rgba(255,255,255,0.06); border:1px solid var(--border);
+      color:var(--text-muted);
+    }
+    .plan-badge.pro {
+      background:linear-gradient(135deg, rgba(6,182,212,0.2), rgba(8,145,178,0.2));
+      border:1px solid rgba(6,182,212,0.3); color:var(--accent-light);
+    }
+    .plan-badge-dot { width:6px; height:6px; border-radius:50%; animation:blink 1.8s ease infinite; }
+    .plan-badge.free .plan-badge-dot { background:var(--text-muted); }
+    .plan-badge.pro  .plan-badge-dot { background:var(--accent-light); }
+
+    .plan-detail { font-size:0.875rem; color:var(--text-muted); }
+    .plan-detail strong { color:var(--text-primary); }
+
+    /* ── Usage bar ── */
+    .usage-bar-row { margin-top:20px; }
+    .usage-bar-label {
+      display:flex; justify-content:space-between;
+      font-size:0.8rem; color:var(--text-muted); margin-bottom:8px;
+    }
+    .usage-bar-label .usage-count { color:var(--text-primary); font-weight:600; }
+    .usage-bar-track {
+      height:8px; background:rgba(255,255,255,0.06);
+      border-radius:100px; overflow:hidden;
+    }
+    .usage-bar-fill {
+      height:100%; border-radius:100px;
+      background:linear-gradient(90deg, var(--accent), var(--accent-light));
+      transition:width 0.8s cubic-bezier(0.22,1,0.36,1);
+    }
+    .usage-bar-fill.full {
+      background:linear-gradient(90deg, #ef4444, #fca5a5);
+    }
+    .usage-reset-note { font-size:0.75rem; color:var(--text-dim); margin-top:6px; }
+
+    /* ── Upgrade CTA ── */
+    .upgrade-cta {
+      margin-top:20px;
+      padding:18px 20px;
+      background:rgba(6,182,212,0.06);
+      border:1px solid rgba(6,182,212,0.2);
+      border-radius:var(--radius-sm);
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+    }
+    .upgrade-cta-text { font-size:0.875rem; color:var(--text-muted); }
+    .upgrade-cta-text strong { color:var(--text-primary); }
+    .upgrade-btn {
+      padding:10px 22px; border-radius:var(--radius-sm);
+      background:linear-gradient(135deg, var(--accent), #0891b2);
+      color:white; font-family:'Inter',sans-serif; font-size:0.875rem; font-weight:600;
+      border:none; cursor:pointer;
+      box-shadow:0 3px 14px var(--accent-glow);
+      transition:all var(--transition);
+    }
+    .upgrade-btn:hover { transform:translateY(-2px); box-shadow:0 6px 24px rgba(6,182,212,0.4); }
+
+    /* ── Billing row ── */
+    .billing-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; }
+    .billing-info { font-size:0.875rem; color:var(--text-muted); }
+    .billing-info strong { color:var(--text-primary); }
+    .billing-btn {
+      padding:10px 20px; border-radius:var(--radius-sm);
+      background:rgba(255,255,255,0.06);
+      border:1px solid var(--border);
+      color:var(--text-primary); font-family:'Inter',sans-serif;
+      font-size:0.875rem; font-weight:500; cursor:pointer;
+      transition:all var(--transition);
+    }
+    .billing-btn:hover { background:rgba(255,255,255,0.1); transform:translateY(-1px); }
+
+    /* ── Account info ── */
+    .info-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04);
+      font-size:0.875rem;
+    }
+    .info-row:last-child { border-bottom:none; }
+    .info-label { color:var(--text-muted); }
+    .info-value { color:var(--text-primary); font-weight:500; }
+
+    /* ── Danger zone ── */
+    .danger-link {
+      font-size:0.8rem; color:var(--text-dim); text-decoration:none;
+      transition:color var(--transition);
+    }
+    .danger-link:hover { color:#fca5a5; }
+  </style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="toast" id="toast"></div>
+
+<div class="account-wrap">
+
+  <!-- Nav -->
+  <nav class="account-nav">
+    <a href="/" class="account-nav-brand">
+      <div class="account-nav-icon">✉️</div>
+      <span class="account-nav-name">FollowUpAI</span>
+    </a>
+    <div class="account-nav-links">
+      <a href="/app"    class="account-nav-link primary">✨ Generate Email</a>
+      <a href="/logout" class="account-nav-link">Sign Out</a>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <div class="account-header">
+    <div class="account-greeting">👋 Hey, {{ user.name.split()[0] }}</div>
+    <div class="account-email">{{ user.email }}</div>
+  </div>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash-msg flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- ── Plan & Usage ── -->
+  <div class="account-section">
+    <div class="section-title">Current Plan</div>
+    <div class="plan-row">
+      <div class="plan-info">
+        <div class="plan-badge {{ 'pro' if user.is_pro else 'free' }}">
+          <span class="plan-badge-dot"></span>
+          {{ 'Pro' if user.is_pro else 'Free' }}
+        </div>
+        <div class="plan-detail">
+          {% if user.is_pro %}
+            <strong>Unlimited emails</strong> · $4.99/month
+          {% else %}
+            <strong>{{ free_limit }} emails</strong> per month
+          {% endif %}
+        </div>
+      </div>
+      {% if not user.is_pro %}
+        <a href="/pricing" style="font-size:0.82rem; color:var(--accent-light); text-decoration:none; font-weight:500;">
+          View Pro →
+        </a>
+      {% endif %}
+    </div>
+
+    {% if not user.is_pro %}
+      <!-- Usage bar -->
+      {% set used = user.monthly_count %}
+      {% set pct  = [(used / free_limit * 100), 100] | min %}
+      <div class="usage-bar-row">
+        <div class="usage-bar-label">
+          <span>Emails used this month</span>
+          <span class="usage-count">{{ used }} / {{ free_limit }}</span>
+        </div>
+        <div class="usage-bar-track">
+          <div class="usage-bar-fill {{ 'full' if used >= free_limit else '' }}"
+               style="width: {{ pct }}%;"></div>
+        </div>
+        <div class="usage-reset-note">Resets on the 1st of each month</div>
+      </div>
+
+      {% if used >= free_limit %}
+        <!-- Upgrade CTA -->
+        <div class="upgrade-cta">
+          <div class="upgrade-cta-text">
+            <strong>You've used all {{ free_limit }} free emails this month.</strong><br>
+            Upgrade to Pro for unlimited emails at $4.99/month.
+          </div>
+          <form method="POST" action="/create-checkout-session" style="margin:0;">
+            <button class="upgrade-btn" type="submit">⚡ Upgrade to Pro</button>
+          </form>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <!-- ── Billing (Pro only) ── -->
+  {% if user.is_pro %}
+  <div class="account-section">
+    <div class="section-title">Billing</div>
+    <div class="billing-row">
+      <div class="billing-info">
+        <strong>Pro Plan</strong> · $4.99 / month<br>
+        Manage your subscription, view invoices, or cancel at any time.
+      </div>
+      <form method="POST" action="/billing-portal" style="margin:0;">
+        <button class="billing-btn" type="submit">🏦 Manage Billing</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Account Info ── -->
+  <div class="account-section">
+    <div class="section-title">Account Details</div>
+    <div class="info-row">
+      <span class="info-label">Name</span>
+      <span class="info-value">{{ user.name }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Email</span>
+      <span class="info-value">{{ user.email }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Member since</span>
+      <span class="info-value">{{ user.created_at.strftime('%B %Y') }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Total emails generated</span>
+      <span class="info-value">{{ user.monthly_count }} this month</span>
+    </div>
+  </div>
+
+  <!-- ── Danger Zone ── -->
+  <div style="text-align:center; margin-top:32px;">
+    <a href="/logout" class="danger-link">Sign out of my account</a>
+  </div>
+
+</div>
+
+<script>
+  // Show upgrade success toast
+  {% if upgraded %}
+  (function() {
+    const t = document.getElementById('toast');
+    t.textContent = '🎉 Welcome to Pro! Unlimited emails unlocked.';
+    t.style.background = 'rgba(16,185,129,0.15)';
+    t.style.color = '#6ee7b7';
+    t.style.borderColor = 'rgba(16,185,129,0.3)';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 5000);
+  })();
+  {% endif %}
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FollowUpAI – Your Email is Ready</title>
+  <meta name="description" content="Your AI-generated follow-up email is ready. Copy and send it directly from here." />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+<!-- Ambient orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<div class="page-wrap">
+  <div class="card" id="mainCard">
+
+    <!-- Back link -->
+    <a href="/" class="back-link" id="backLink">
+      ← Back to FollowUpAI
+    </a>
+
+    <!-- Brand + success badge -->
+    <div class="badge" style="background:rgba(16,185,129,0.1); color:#6ee7b7; border-color:rgba(16,185,129,0.25);">
+      <span class="dot" style="background:#6ee7b7;"></span>
+      Email Generated
+    </div>
+
+    <div class="brand">
+      <div class="brand-icon">📬</div>
+      <h1 class="brand-name">Your Follow-Up Email</h1>
+    </div>
+
+    <p class="subtitle">AI-generated and ready to send. Review, edit, then copy.</p>
+
+    <div class="divider"></div>
+
+    <!-- Output section -->
+    <div class="section-header">
+      <div class="field-label" style="margin-bottom:0;">Generated Email</div>
+      <div style="font-size:0.75rem; color:var(--text-dim);" id="wordCountBadge"></div>
+    </div>
+
+    <br>
+
+    <textarea id="emailBox" readonly>{{ email }}</textarea>
+
+    <!-- Action buttons -->
+    <div class="btn-row">
+      <button class="btn btn-success" id="copyBtn" onclick="copyEmail()">
+        📋 Copy Email
+      </button>
+      <button class="btn btn-secondary" id="editBtn" onclick="toggleEdit()">
+        ✏️ Edit
+      </button>
+      <button class="btn btn-secondary" id="downloadBtn" onclick="downloadEmail()">
+        ⬇ Download
+      </button>
+    </div>
+
+  </div>
+
+  <p class="footer">Powered by GPT-4o-mini via OpenRouter</p>
+</div>
+
+<script>
+  // ── Word/char count ──
+  const emailBox = document.getElementById('emailBox');
+  const wordCountBadge = document.getElementById('wordCountBadge');
+
+  function updateWordCount() {
+    const text  = emailBox.value.trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    wordCountBadge.textContent = words + ' words';
+  }
+
+  emailBox.addEventListener('input', updateWordCount);
+  updateWordCount();
+
+  // ── Copy email ──
+  function copyEmail() {
+    const text = emailBox.value;
+    if (!text.trim()) return;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      const original = btn.innerHTML;
+      btn.innerHTML = '✅ Copied!';
+      btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+      showToast('✅ Email copied to clipboard!');
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.style.background = '';
+      }, 2000);
+    }).catch(() => {
+      // Fallback for older browsers
+      emailBox.select();
+      document.execCommand('copy');
+      showToast('✅ Email copied!');
+    });
+  }
+
+  // ── Toggle edit mode ──
+  let isEditing = false;
+  function toggleEdit() {
+    const editBtn = document.getElementById('editBtn');
+    isEditing = !isEditing;
+    emailBox.readOnly = !isEditing;
+
+    if (isEditing) {
+      emailBox.style.borderColor = 'rgba(6,182,212,0.5)';
+      emailBox.style.boxShadow   = '0 0 0 4px rgba(6,182,212,0.1)';
+      emailBox.style.background  = 'rgba(6,182,212,0.04)';
+      editBtn.innerHTML = '💾 Done';
+      emailBox.focus();
+      showToast('✏️ Edit mode on. Make your changes.');
+    } else {
+      emailBox.style.borderColor = '';
+      emailBox.style.boxShadow   = '';
+      emailBox.style.background  = '';
+      editBtn.innerHTML = '✏️ Edit';
+      showToast('💾 Changes saved locally.');
+    }
+    updateWordCount();
+  }
+
+  // ── Download as .txt ──
+  function downloadEmail() {
+    const text = emailBox.value;
+    if (!text.trim()) return;
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'follow-up-email.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('⬇ Downloading email…');
+  }
+
+  // ── Toast helper ──
+  function showToast(msg, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ── Subtle card tilt ──
+  const card = document.getElementById('mainCard');
+  document.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const cx   = rect.left + rect.width / 2;
+    const cy   = rect.top  + rect.height / 2;
+    const dx   = (e.clientX - cx) / (window.innerWidth / 2);
+    const dy   = (e.clientY - cy) / (window.innerHeight / 2);
+    card.style.transform = `perspective(1000px) rotateY(${dx * 2}deg) rotateX(${-dy * 1.5}deg)`;
+  });
+
+  document.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+  });
+
+  // ── Animate email text in character by character ──
+  (function typeEmail() {
+    const fullText = emailBox.value;
+    if (!fullText.trim()) return;
+
+    // Only animate for reasonably short emails to avoid jank
+    if (fullText.length > 1500) return;
+
+    emailBox.value = '';
+    let i = 0;
+    const speed = 8; // ms per character
+
+    const type = () => {
+      if (i < fullText.length) {
+        emailBox.value += fullText[i++];
+        emailBox.scrollTop = emailBox.scrollHeight;
+        updateWordCount();
+        setTimeout(type, speed);
+      }
+    };
+    type();
+  })();
+</script>
+
+</body>
+</html>
