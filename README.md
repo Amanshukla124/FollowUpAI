@@ -2,9 +2,13 @@
 
 **FollowUpAI** is an AI-powered communication assistant that helps users generate professional emails from meeting transcripts and create personalized cold outreach emails in seconds.
 
+<img width="1440" height="811" alt="Screenshot 2026-04-03 at 2 32 40 PM" src="https://github.com/user-attachments/assets/217dec44-816a-4291-aa17-20d937617970" />
+
 ---
 
 ## ✨ Features
+<img width="1438" height="811" alt="Screenshot 2026-04-03 at 2 33 04 PM" src="https://github.com/user-attachments/assets/cc01d4ea-4192-42b7-bb9c-851492969ad0" />
+
 
 ### 🧠 AI Follow-up Email Generator
 
@@ -26,6 +30,7 @@
   * Networking
 
 ### 🎯 Email Templates
+<img width="1438" height="811" alt="Screenshot 2026-04-03 at 2 33 52 PM" src="https://github.com/user-attachments/assets/bccab40b-2d40-485a-afd3-fff7cf2e501a" />
 
 * Pre-built templates for:
 
@@ -130,6 +135,7 @@ OR
 ---
 
 ## 💰 Pricing (Planned)
+<img width="1440" height="811" alt="Screenshot 2026-04-03 at 2 33 31 PM" src="https://github.com/user-attachments/assets/0932caff-acfa-4f05-a7d1-99d7320a9039" />
 
 | Plan    | Features                     |
 | ------- | ---------------------------- |
